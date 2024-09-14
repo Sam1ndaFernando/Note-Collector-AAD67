@@ -1,13 +1,29 @@
 package lk.ijse.notecal.service;
 
 import lk.ijse.notecal.dto.impl.NoteDTO;
+import lk.ijse.notecal.util.AppUtil;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class NoteSericeImpl implements NoteService{
+
+    private static List<NoteDTO>noteDTOList=new ArrayList<>();
+    public NoteSericeImpl(){
+        noteDTOList.add(new NoteDTO( "NOTE-20ffbc65-1fd5-45bf-b03b-ce00f8fd04d0",
+                "python",
+                "Js",
+                "2024/sep/14",
+                "P4",
+                "5"
+        ));
+    }
 
     @Override
     public String saveNote(NoteDTO noteDTO) {
+        noteDTO.setNoteId(AppUtil.generateNoteId());
         return null;
     }
 

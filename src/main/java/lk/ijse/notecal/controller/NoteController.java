@@ -2,18 +2,19 @@ package lk.ijse.notecal.controller;
 
 import lk.ijse.notecal.dto.impl.NoteDTO;
 import lk.ijse.notecal.service.NoteSericeImpl;
+import lk.ijse.notecal.service.NoteService;
 import lk.ijse.notecal.util.AppUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/notes")
 public class NoteController {
+    @Autowired
+    private NoteService noteService;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public NoteDTO saveNote(@RequestBody NoteDTO noteDTO){
@@ -27,8 +28,9 @@ public class NoteController {
         return null;
     }
 
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<NoteDTO>getAllNotes(){
-        return null;
+        return noteService.getAllNotes();
     }
 
     public void deleteNote(String noteId){
