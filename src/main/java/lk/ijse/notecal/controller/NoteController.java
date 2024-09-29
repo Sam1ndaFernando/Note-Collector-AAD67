@@ -1,7 +1,7 @@
 package lk.ijse.notecal.controller;
 
 import lk.ijse.notecal.dto.impl.NoteDTO;
-import lk.ijse.notecal.service.NoteSericeImpl;
+import lk.ijse.notecal.service.impl.NoteSericeImpl;
 import lk.ijse.notecal.service.NoteService;
 import lk.ijse.notecal.util.AppUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +18,7 @@ public class NoteController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public NoteDTO saveNote(@RequestBody NoteDTO noteDTO){
-        var noteSerice = new NoteSericeImpl();
-        noteDTO.setNoteId(AppUtil.generateNoteId());
-        noteSerice.saveNote(noteDTO);
-        return noteDTO;
+       return noteService.saveNote(noteDTO);
     }
 
     public NoteDTO getSelectedNote(){

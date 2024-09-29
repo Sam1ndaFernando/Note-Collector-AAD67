@@ -1,6 +1,7 @@
-package lk.ijse.notecal.service;
+package lk.ijse.notecal.service.impl;
 
 import lk.ijse.notecal.dto.impl.NoteDTO;
+import lk.ijse.notecal.service.NoteService;
 import lk.ijse.notecal.util.AppUtil;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class NoteSericeImpl implements NoteService{
+public class NoteSericeImpl implements NoteService {
 
     private static List<NoteDTO>noteDTOList=new ArrayList<>();
     public NoteSericeImpl(){
@@ -22,9 +23,9 @@ public class NoteSericeImpl implements NoteService{
     }
 
     @Override
-    public String saveNote(NoteDTO noteDTO) {
+    public NoteDTO saveNote(NoteDTO noteDTO) {
         noteDTO.setNoteId(AppUtil.generateNoteId());
-        return null;
+        return noteDTO;
     }
 
     @Override
@@ -44,6 +45,5 @@ public class NoteSericeImpl implements NoteService{
 
     @Override
     public void updateNote(String noteId, NoteDTO noteDTO) {
-
     }
 }

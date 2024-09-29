@@ -1,16 +1,20 @@
 package lk.ijse.notecal.controller;
 
 import lk.ijse.notecal.dto.impl.UserDTO;
+import lk.ijse.notecal.service.UserService;
 import lk.ijse.notecal.util.AppUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/users")
 public class UserController {
+    @Autowired
+    private UserService userService;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
     public UserDTO saveUser(@RequestPart ("firstName") String firstName,
@@ -20,17 +24,42 @@ public class UserController {
                             @RequestPart ("profilePic") String profilePic){
 
 
-        String picToBase64 = AppUtil.profilePicToBase64(profilePic);
-        String generateUserId = AppUtil.generateUserId();
-        UserDTO userDTO = new UserDTO();
-        userDTO.setUserId(generateUserId);
-        userDTO.setFirstName(firstName);
-        userDTO.setLastName(lastName);
-        userDTO.setEmail(email);
-        userDTO.setPassword(password);
-        userDTO.setProfilePic(picToBase64);
-        return userDTO;
+        String base64ToProfilePic = "";
+        try{
+            byte[] bytesProPic = profilePic.getBytes();
+            base64ToProfilePic = AppUtil.profilePicToBase64(bytesProPic);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
+        String userId = AppUtil.generateUserId();
+
+        UserDTO buildUserDTO = new UserDTO();
+        buildUserDTO.setUserId(userId);
+        buildUserDTO.setFirstName(firstName);
+        buildUserDTO.setLastName(lastName);
+        buildUserDTO.setEmail(email);
+        buildUserDTO.setPassword(password);
+        buildUserDTO.setProfilePic(base64ToProfilePic);
+        userService.saveUser(buildUserDTO);
+
+        return buildUserDTO;
+
+    }
+    @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public UserDTO getSelectedUser(@PathVariable ("userId") String userId){
+        return userService.getUser(userId);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable ("userId") String userId){
+        userService.deleteUser(userId);
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDTO> getAllUsers(){
+        return userService.getAllUsers();
     }
 
 }

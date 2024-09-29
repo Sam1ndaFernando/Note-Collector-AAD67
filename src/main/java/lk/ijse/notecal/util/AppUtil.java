@@ -10,9 +10,9 @@ public class AppUtil {
     public static String generateUserId() {
         return "USER-"+ UUID.randomUUID();
     }
-    public static String profilePicToBase64(String profilePic) {
+    public static String profilePicToBase64(byte [] profilePic) {
 
-        String s = Base64.getEncoder().encodeToString(profilePic.getBytes());
+        String s = Base64.getEncoder().encodeToString(profilePic);
         return s;
     }
 }
