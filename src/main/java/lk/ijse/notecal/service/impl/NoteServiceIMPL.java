@@ -12,6 +12,7 @@ import lk.ijse.notecal.service.NoteService;
 import lk.ijse.notecal.util.AppUtil;
 import lk.ijse.notecal.util.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,13 +28,14 @@ public class NoteServiceIMPL implements NoteService {
     private Mapping noteMapping;
 
     @Override
-    public void saveNote(NoteDTO noteDTO) {
+    public ResponseEntity<Void> saveNote(NoteDTO noteDTO) {
         noteDTO.setNoteId(AppUtil.generateNoteId());
         NoteEntity saveNote = noteDao.save(noteMapping.toNoteEntity(noteDTO));
         if (noteDTO == null) {
             throw new DataPersistsExecption("Note not saved");
 
         }
+        return null;
     }
 
     @Override

@@ -39,7 +39,7 @@ public class NoteController {
     @GetMapping(value = "/{noteID}",produces = MediaType.APPLICATION_JSON_VALUE)
     public NoteStatus SelectedUserAndNoteErrorStatus(@PathVariable ("noteID") String noteId){
         if (!RegexProcess.noteIdMatcher(noteId)) {
-            return new SelectedUserAndNoteErrorStatus(400, "Invalid Note ID");
+            return new SelectedUserAndNoteErrorStatus(1, "Invalid Note ID");
         }
         return (NoteStatus) noteService.getNote(noteId);
     }
