@@ -1,13 +1,19 @@
 package lk.ijse.notecal.controller;
 
+import lk.ijse.notecal.customStatusCodes.SelectedUserAndNoteErrorStatus;
+import lk.ijse.notecal.dto.NoteStatus;
 import lk.ijse.notecal.dto.impl.NoteDTO;
-import lk.ijse.notecal.service.impl.NoteSericeImpl;
+import lk.ijse.notecal.execption.DataPersistsExecption;
+import lk.ijse.notecal.execption.NoteNotFoundExecption;
 import lk.ijse.notecal.service.NoteService;
-import lk.ijse.notecal.util.AppUtil;
+import lk.ijse.notecal.util.RegexProcess;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 @RestController
@@ -17,12 +23,25 @@ public class NoteController {
     private NoteService noteService;
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public NoteDTO saveNote(@RequestBody NoteDTO noteDTO){
-       return noteService.saveNote(noteDTO);
+
+    public ResponseEntity <Void> saveNote(@RequestBody NoteDTO noteDTO){
+       try {
+           return noteService.saveNote(noteDTO);
+       }catch (DataPersistsExecption e){
+           e.printStackTrace();
+           return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+       }catch (Exception e){
+           e.printStackTrace();
+           return new ResponseEntity<> (HttpStatus.INTERNAL_SERVER_ERROR);
+       }
     }
 
-    public NoteDTO getSelectedNote(){
-        return null;
+    @GetMapping(value = "/{noteID}",produces = MediaType.APPLICATION_JSON_VALUE)
+    public NoteStatus SelectedUserAndNoteErrorStatus(@PathVariable ("noteID") String noteId){
+        if (!RegexProcess.noteIdMatcher(noteId)) {
+            return new SelectedUserAndNoteErrorStatus(400, "Invalid Note ID");
+        }
+        return (NoteStatus) noteService.getNote(noteId);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -30,11 +49,37 @@ public class NoteController {
         return noteService.getAllNotes();
     }
 
-    public void deleteNote(String noteId){
-
+    @DeleteMapping(value = "/{noteID}")
+    public ResponseEntity<Void> deleteNote(@PathVariable ("noteID") String noteId){
+        try {
+            if (!RegexProcess.noteIdMatcher(noteId)) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            noteService.deleteNote(noteId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }catch (NoteNotFoundExecption e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-
-    public void updateNote(String noteId,NoteDTO noteDTO){
-
+    @PutMapping(value = "/{noteId}")
+    public ResponseEntity<Void> updateNote(@PathVariable ("noteId") String noteId,
+                                           @RequestBody NoteDTO updatedNoteDTO){
+        try {
+            if(!RegexProcess.noteIdMatcher(noteId) || updatedNoteDTO == null){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            noteService.updateNote(noteId,updatedNoteDTO);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }catch (NoteNotFoundExecption e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
